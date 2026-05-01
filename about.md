@@ -10,11 +10,9 @@ permalink: /about/
     <div class="about-img-placeholder">🪴</div>
 
     <div class="about-text">
-      <h1>About This Cookbook</h1>
-      <p>This cookbook is a collection of our favorite recipes — simple, reliable, and made to be used.</p>
-      <p>No fluff, no filler. Just recipes that earn a spot in our rotation.</p>
-      <p>Made with care and shared with you.</p>
-      <span class="heart">♥</span>
+      <h1>About these recipes</h1>
+      <p>This cookbook is a collection of recipes I enjoy cooking for other — simple, reliable, and most importantly memorable.</p>
+      <p>The site, like good food, is simple.</p>
     </div>
 
   </div>
