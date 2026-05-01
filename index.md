@@ -36,8 +36,8 @@ title: "The Kitchen"
   </div>
 
   <div class="home-quote">
-    <blockquote>"Good food is meant to be shared."</blockquote>
-    <cite>— Anonymous</cite>
+    <blockquote>"When someone cooks for you, they are saying something. They are telling you about themselves: where they come from, who they are, what makes them happy."</blockquote>
+    <cite>— anthony bourdain</cite>
   </div>
 
 </div>
