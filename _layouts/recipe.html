@@ -1,73 +1,72 @@
 ---
 layout: default
 ---
-<a class="back-link" href="{{ '/' | relative_url }}">All Recipes</a>
+<div class="wrap">
+  <div class="recipe-page">
 
-<article>
+    <a class="back-link" href="{{ '/' | relative_url }}">Back to Recipes</a>
 
-  <div class="recipe-hero">
-    {% if page.image %}
-      <img class="recipe-hero-img" src="{{ page.image | relative_url }}" alt="{{ page.title }}">
-    {% else %}
-      <div class="recipe-hero-img-placeholder">🍽</div>
-    {% endif %}
+    <div class="recipe-header">
+
+      <div>
+        {% if page.image %}
+          <img class="recipe-header-img" src="{{ page.image | relative_url }}" alt="{{ page.title }}">
+        {% else %}
+          <div class="recipe-header-img-placeholder">🍽</div>
+        {% endif %}
+      </div>
+
+      <div class="recipe-header-meta">
+        <h1 class="recipe-title">{{ page.title }}</h1>
+        {% if page.description %}<p class="recipe-desc">{{ page.description }}</p>{% endif %}
+
+        <dl class="recipe-stats">
+          {% if page.servings %}
+          <div class="recipe-stat">
+            <dt>Serves</dt>
+            <dd>{{ page.servings }}</dd>
+          </div>
+          {% endif %}
+          {% if page.prep_time %}
+          <div class="recipe-stat">
+            <dt>Prep Time</dt>
+            <dd>{{ page.prep_time }}</dd>
+          </div>
+          {% endif %}
+          {% if page.cook_time %}
+          <div class="recipe-stat">
+            <dt>Cook Time</dt>
+            <dd>{{ page.cook_time }}</dd>
+          </div>
+          {% endif %}
+          {% if page.difficulty %}
+          <div class="recipe-stat">
+            <dt>Difficulty</dt>
+            <dd>{{ page.difficulty }}</dd>
+          </div>
+          {% endif %}
+        </dl>
+      </div>
+
+    </div>
+
+    <div class="recipe-body">
+
+      <div class="ingredients">
+        <h2>Ingredients</h2>
+        <ul class="ingredients-list">
+          {% for item in page.ingredients %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="instructions">
+        <h2>Instructions</h2>
+        {{ content }}
+      </div>
+
+    </div>
+
   </div>
-
-  <p class="recipe-eyebrow">{{ page.category }}</p>
-  <h1 class="recipe-title">{{ page.title }}</h1>
-  {% if page.description %}<p class="recipe-desc">{{ page.description }}</p>{% endif %}
-
-  {% if page.tags %}
-  <div class="tag-row">
-    {% for tag in page.tags %}
-      <span class="recipe-tag">{{ tag }}</span>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <dl class="recipe-stats">
-    {% if page.prep_time %}
-    <div class="recipe-stat">
-      <dt>Prep</dt>
-      <dd>{{ page.prep_time }}</dd>
-    </div>
-    {% endif %}
-    {% if page.cook_time %}
-    <div class="recipe-stat">
-      <dt>Cook</dt>
-      <dd>{{ page.cook_time }}</dd>
-    </div>
-    {% endif %}
-    {% if page.servings %}
-    <div class="recipe-stat">
-      <dt>Serves</dt>
-      <dd>{{ page.servings }}</dd>
-    </div>
-    {% endif %}
-    {% if page.difficulty %}
-    <div class="recipe-stat">
-      <dt>Difficulty</dt>
-      <dd>{{ page.difficulty }}</dd>
-    </div>
-    {% endif %}
-  </dl>
-
-  <div class="recipe-body">
-
-    <aside class="ingredients-card">
-      <h2>Ingredients</h2>
-      <ul class="ingredients-list">
-        {% for item in page.ingredients %}
-          <li>{{ item }}</li>
-        {% endfor %}
-      </ul>
-    </aside>
-
-    <div class="instructions">
-      <h2>Method</h2>
-      {{ content }}
-    </div>
-
-  </div>
-
-</article>
+</div>

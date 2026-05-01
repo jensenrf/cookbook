@@ -1,23 +1,21 @@
 ---
-layout: page
+layout: default
 title: About
 permalink: /about/
 ---
 
-This is a personal cookbook — a quiet corner of the internet to keep recipes I return to again and again.
+<div class="wrap">
+  <div class="about-layout">
 
-No ads. No life story before the recipe. No scrolling past five paragraphs to find the ingredient list.
+    <div class="about-img-placeholder">🪴</div>
 
-Just food, written down the way I'd share it with a friend.
+    <div class="about-text">
+      <h1>About This Cookbook</h1>
+      <p>This cookbook is a collection of our favorite recipes — simple, reliable, and made to be used.</p>
+      <p>No fluff, no filler. Just recipes that earn a spot in our rotation.</p>
+      <p>Made with care and shared with you.</p>
+      <span class="heart">♥</span>
+    </div>
 
-## How it works
-
-Each recipe is a plain Markdown file. The site is built with [Jekyll](https://jekyllrb.com/) and hosted on GitHub Pages — no database, no server, no fuss.
-
-## A note on measurements
-
-Recipes use weight (grams) where precision matters, volume elsewhere. A kitchen scale makes everything more reliable.
-
-## Contact
-
-Found a mistake? Have a suggestion? Open an issue on GitHub.
+  </div>
+</div>

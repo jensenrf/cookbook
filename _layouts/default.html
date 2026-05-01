@@ -11,8 +11,8 @@
 <body>
 
   <header class="site-header">
-    <div class="site-wrap">
-      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}<span></span></a>
+    <div class="wrap">
+      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
       <nav class="site-nav">
         <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Recipes</a>
         <a href="{{ '/about/' | relative_url }}" {% if page.url contains 'about' %}class="active"{% endif %}>About</a>
@@ -20,13 +20,16 @@
     </div>
   </header>
 
-  <main class="site-wrap">
+  <main>
     {{ content }}
   </main>
 
   <footer class="site-footer">
-    <div class="site-wrap">
-      {{ site.title }} &nbsp;·&nbsp; A personal cookbook
+    <div class="wrap">
+      <p>© {% assign y = 'now' | date: "%Y" %}{{ y }} {{ site.title }}</p>
+      <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+      </svg>
     </div>
   </footer>
 

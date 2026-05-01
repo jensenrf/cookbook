@@ -3,21 +3,41 @@ layout: default
 title: "The Kitchen"
 ---
 
-<div class="home-header">
-  <p class="home-eyebrow">Personal Cookbook</p>
-  <h1 class="home-title">The Kitchen</h1>
-  <p class="home-subtitle">Recipes collected over time — simple, reliable, good.</p>
-</div>
+<div class="wrap">
 
-<ul class="recipe-index">
-  {% assign recipes = site.recipes | sort: "title" %}
-  {% for recipe in recipes %}
-  <li class="recipe-index-item">
-    <a href="{{ recipe.url | relative_url }}">{{ recipe.title }}</a>
-    <div style="display:flex;align-items:center;gap:.8rem;">
-      {% if recipe.cook_time %}<span class="recipe-meta-time">{{ recipe.cook_time }}</span>{% endif %}
-      {% if recipe.category %}<span class="recipe-tag">{{ recipe.category }}</span>{% endif %}
+  <div class="home-hero">
+    <div class="home-hero-text">
+      <h1>Simple recipes.<br>Made to be used.</h1>
+      <p>A collection of our favorite recipes, organized for real life.</p>
     </div>
-  </li>
-  {% endfor %}
-</ul>
+    <div class="home-hero-img-placeholder">🌿</div>
+  </div>
+
+  <p class="section-label">Recipes</p>
+
+  <div class="recipe-grid">
+    {% assign recipes = site.recipes | sort: "title" %}
+    {% for recipe in recipes %}
+    <a class="recipe-card" href="{{ recipe.url | relative_url }}">
+      {% if recipe.image %}
+        <img class="recipe-card-img" src="{{ recipe.image | relative_url }}" alt="{{ recipe.title }}">
+      {% else %}
+        <div class="recipe-card-img-placeholder">🍽</div>
+      {% endif %}
+      <div class="recipe-card-body">
+        <p class="recipe-card-title">{{ recipe.title }}</p>
+        {% if recipe.description %}
+          <p class="recipe-card-desc">{{ recipe.description }}</p>
+        {% endif %}
+        <span class="recipe-card-arrow">→</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="home-quote">
+    <blockquote>"Good food is meant to be shared."</blockquote>
+    <cite>— Anonymous</cite>
+  </div>
+
+</div>
