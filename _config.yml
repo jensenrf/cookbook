@@ -1,7 +1,7 @@
 title: "The Kitchen"
 description: "A personal cookbook."
-baseurl: ""
-url: ""
+baseurl: "/cookbook"
+url: "https://jensenrf.github.io"
 
 # Build settings
 markdown: kramdown
