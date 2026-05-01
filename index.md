@@ -7,8 +7,8 @@ title: "The Kitchen"
 
   <div class="home-hero">
     <div class="home-hero-text">
-      <h1>Simple recipes.<br>Made to be used.</h1>
-      <p>A collection of our favorite recipes, organized for real life.</p>
+      <h1>Simple recipes.<br>To be enjoyed with others.</h1>
+      <p>A collection of my favorite recipes to be shared around the table.</p>
     </div>
     <div class="home-hero-img-placeholder">🌿</div>
   </div>
