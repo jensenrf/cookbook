@@ -1,4 +1,4 @@
-# The Kitchen — Personal Cookbook
+# kitchn cards — a personal cookbook
 
 A clean, fast, static cookbook built with Jekyll and hosted on GitHub Pages.
 
