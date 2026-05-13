@@ -16,6 +16,7 @@
       <nav class="site-nav">
         <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Recipes</a>
         <a href="{{ '/about/' | relative_url }}" {% if page.url contains 'about' %}class="active"{% endif %}>About</a>
+        <a href="{{ '/takeaway/' | relative_url }}" {% if page.url contains 'takeaway' %}class="active"{% endif %}>Takeaway</a>
       </nav>
     </div>
   </header>
