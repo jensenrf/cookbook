@@ -2,17 +2,17 @@
 layout: default
 title: Takeaway Free
 permalink: /takeaway-free/
-description: Clip any recipe from the web for free — no API key needed.
+description: Paste any recipe text and get a markdown file for your cookbook instantly.
 ---
 
 <style>
   .takeaway-wrap {
-    max-width: 620px;
+    max-width: 640px;
     margin: 0 auto;
     padding: 3.5rem 2rem 6rem;
   }
 
-  .takeaway-header { margin-bottom: 3rem; }
+  .takeaway-header { margin-bottom: 2.5rem; }
 
   .takeaway-eyebrow {
     font-size: .75rem;
@@ -42,56 +42,110 @@ description: Clip any recipe from the web for free — no API key needed.
   /* ── Free badge ── */
   .free-badge {
     display: inline-block;
-    font-size: .68rem;
+    font-size: .65rem;
     letter-spacing: .1em;
     text-transform: uppercase;
     color: #4a8c5c;
     background: #edf7f1;
     border: 1px solid #b8dfc6;
     border-radius: 4px;
-    padding: .25em .7em;
-    margin-left: .6rem;
+    padding: .22em .65em;
+    margin-left: .5rem;
     vertical-align: middle;
     position: relative;
-    top: -3px;
+    top: -4px;
+    font-family: 'Source Serif 4', serif;
+    font-style: normal;
   }
 
-  /* ── Clip form ── */
-  .clip-form {
+  /* ── Step labels ── */
+  .step-label {
+    font-size: .7rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .6rem;
     display: flex;
-    gap: .75rem;
-    align-items: stretch;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    gap: .5rem;
   }
 
-  @media (max-width: 480px) { .clip-form { flex-direction: column; } }
+  .step-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── URL input row (optional, decorative) ── */
+  .url-row {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1rem;
+  }
 
   .url-input {
     flex: 1;
-    padding: .9rem 1.1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: 'Source Serif 4', serif;
+    font-size: .88rem;
+    color: var(--muted);
+    outline: none;
+    transition: border-color .15s;
+    min-width: 0;
+  }
+
+  .url-input:focus { border-color: var(--ink); color: var(--ink); }
+  .url-input::placeholder { color: var(--border); }
+
+  /* ── Paste textarea ── */
+  .paste-area {
+    width: 100%;
+    min-height: 220px;
+    padding: 1rem 1.1rem;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: var(--surface);
     font-family: 'Source Serif 4', serif;
-    font-size: .92rem;
+    font-size: .88rem;
     color: var(--ink);
+    line-height: 1.65;
+    resize: vertical;
     outline: none;
     transition: border-color .15s, box-shadow .15s;
-    min-width: 0;
+    margin-bottom: .75rem;
   }
 
-  .url-input:focus {
+  .paste-area:focus {
     border-color: var(--ink);
-    box-shadow: 0 0 0 3px rgba(26,23,20,.06);
+    box-shadow: 0 0 0 3px rgba(26,23,20,.05);
   }
 
-  .url-input::placeholder { color: var(--border); }
+  .paste-area::placeholder { color: var(--border); }
 
-  /* ── Takeaway container button ── */
-  .btn-takeaway {
+  /* ── Action row ── */
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .paste-hint {
+    font-size: .8rem;
+    color: var(--muted);
+    font-style: italic;
+    flex: 1;
+  }
+
+  /* ── Recipe card button ── */
+  .btn-clip {
     flex-shrink: 0;
-    width: 58px;
-    height: 58px;
+    width: 56px;
+    height: 56px;
     border: none;
     background: var(--ink);
     border-radius: 10px;
@@ -103,22 +157,22 @@ description: Clip any recipe from the web for free — no API key needed.
     position: relative;
   }
 
-  .btn-takeaway:hover:not(:disabled) { background: #2e2a26; }
-  .btn-takeaway:active:not(:disabled) { transform: scale(.94); }
-  .btn-takeaway:disabled { background: var(--border); cursor: not-allowed; }
+  .btn-clip:hover:not(:disabled) { background: #2e2a26; }
+  .btn-clip:active:not(:disabled) { transform: scale(.94); }
+  .btn-clip:disabled { background: var(--border); cursor: not-allowed; }
 
-  .btn-takeaway svg {
-    width: 28px;
-    height: 28px;
+  .btn-clip svg {
+    width: 26px;
+    height: 26px;
     color: white;
     transition: opacity .15s;
   }
 
-  .btn-takeaway.loading svg { opacity: 0; }
+  .btn-clip.loading svg { opacity: 0; }
 
-  .btn-takeaway .spinner {
+  .btn-clip .spinner {
     position: absolute;
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border: 2px solid rgba(255,255,255,.25);
     border-top-color: white;
     border-radius: 50%;
@@ -126,7 +180,7 @@ description: Clip any recipe from the web for free — no API key needed.
     display: none;
   }
 
-  .btn-takeaway.loading .spinner { display: block; }
+  .btn-clip.loading .spinner { display: block; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -135,11 +189,8 @@ description: Clip any recipe from the web for free — no API key needed.
     font-size: .85rem;
     color: var(--muted);
     font-style: italic;
-    min-height: 1.4rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
+    min-height: 1.3rem;
+    margin-bottom: 1.2rem;
   }
 
   .status-line.error { color: #b84040; font-style: normal; }
@@ -157,7 +208,7 @@ description: Clip any recipe from the web for free — no API key needed.
   .preview-card.visible { display: block; }
 
   .preview-card-header {
-    padding: 1rem 1.2rem;
+    padding: .9rem 1.2rem;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -167,7 +218,7 @@ description: Clip any recipe from the web for free — no API key needed.
 
   .preview-filename {
     font-family: monospace;
-    font-size: .8rem;
+    font-size: .78rem;
     color: var(--muted);
   }
 
@@ -191,70 +242,20 @@ description: Clip any recipe from the web for free — no API key needed.
   .btn-download.saved { background: #4a8c5c; }
 
   .preview-body {
-    padding: 1.2rem;
+    padding: 1.1rem 1.2rem;
     font-family: monospace;
-    font-size: .78rem;
+    font-size: .76rem;
     line-height: 1.6;
     color: var(--ink);
-    max-height: 340px;
+    max-height: 320px;
     overflow-y: auto;
     white-space: pre-wrap;
     word-break: break-word;
     background: #fdfcfb;
   }
 
-  /* ── Fallback CTA ── */
-  .fallback-cta {
-    display: none;
-    margin-top: 2rem;
-    padding: 1.4rem 1.6rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-  }
-
-  .fallback-cta.visible { display: block; }
-
-  .fallback-cta-eyebrow {
-    font-size: .68rem;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: .5rem;
-  }
-
-  .fallback-cta h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: .5rem;
-    color: var(--ink);
-  }
-
-  .fallback-cta p {
-    font-size: .88rem;
-    color: var(--muted);
-    margin-bottom: 1rem;
-    line-height: 1.55;
-  }
-
-  .cta-link {
-    display: inline-flex;
-    align-items: center;
-    gap: .4rem;
-    padding: .6rem 1.1rem;
-    background: var(--ink);
-    color: white;
-    border-radius: 7px;
-    font-size: .85rem;
-    text-decoration: none;
-    transition: background .15s;
-  }
-
-  .cta-link:hover { background: #2e2a26; text-decoration: none; }
-
-  /* ── Supported sites ── */
-  .sites-note {
+  /* ── Paid CTA ── */
+  .paid-cta {
     margin-top: 2rem;
     padding: 1.2rem 1.4rem;
     background: var(--surface);
@@ -262,18 +263,39 @@ description: Clip any recipe from the web for free — no API key needed.
     border-radius: 10px;
   }
 
-  .sites-note p {
-    font-size: .82rem;
+  .paid-cta-label {
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
     color: var(--muted);
-    margin: 0;
-    line-height: 1.6;
+    margin-bottom: .3rem;
   }
 
-  .sites-note strong { color: var(--ink); font-weight: 400; }
+  .paid-cta p {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: .8rem;
+    line-height: 1.55;
+  }
+
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .55rem 1rem;
+    background: var(--ink);
+    color: white;
+    border-radius: 7px;
+    font-size: .82rem;
+    text-decoration: none;
+    transition: background .15s;
+  }
+
+  .cta-link:hover { background: #2e2a26; text-decoration: none; }
 
   /* ── How it works ── */
   .how-it-works {
-    margin-top: 3.5rem;
+    margin-top: 3rem;
     padding-top: 2.5rem;
     border-top: 1px solid var(--border);
   }
@@ -291,10 +313,10 @@ description: Clip any recipe from the web for free — no API key needed.
     gap: 1.5rem;
   }
 
-  @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+  @media (max-width: 500px) { .steps { grid-template-columns: 1fr; } }
 
   .step {
-    font-size: .85rem;
+    font-size: .84rem;
     color: var(--muted);
     line-height: 1.55;
   }
@@ -321,27 +343,41 @@ description: Clip any recipe from the web for free — no API key needed.
   <div class="takeaway-header">
     <p class="takeaway-eyebrow">Recipe Clipper</p>
     <h1 class="takeaway-title">Takeaway <span class="free-badge">Free</span></h1>
-    <p class="takeaway-subtitle">Paste a recipe link. Get a markdown file instantly — no account, no API key.</p>
+    <p class="takeaway-subtitle">Copy any recipe text from any website — paste it here, get a markdown file. No account, no API key, no fetch required.</p>
   </div>
 
-  <!-- Clip form -->
-  <div class="clip-form">
-    <input
-      type="url"
-      class="url-input"
-      id="urlInput"
-      placeholder="https://www.seriouseats.com/your-recipe"
-      autocomplete="off"
-      spellcheck="false"
-    >
-    <button class="btn-takeaway" id="btnClip" title="Clip recipe">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 8h16l-1.5 10a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8Z"/>
-        <path d="M3 6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2H3V6Z"/>
-        <path d="M9 5V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/>
-        <line x1="9" y1="12" x2="9" y2="16"/>
-        <line x1="12" y1="11" x2="12" y2="16"/>
-        <line x1="15" y1="12" x2="15" y2="16"/>
+  <!-- Step 1: Optional URL for reference -->
+  <p class="step-label">Step 1 — Paste the recipe text</p>
+
+  <textarea
+    class="paste-area"
+    id="pasteArea"
+    placeholder="Copy everything from the recipe page — title, ingredients, instructions, cook time — and paste it here. More text is better; the parser will extract what it needs."
+    spellcheck="false"
+  ></textarea>
+
+  <div class="action-row">
+    <p class="paste-hint">Paste from any recipe site — works even behind logins.</p>
+    <button class="btn-clip" id="btnClip" title="Parse recipe">
+      <!-- Recipe card icon (recreated from Noun Project #291038 by Marianna Nardella) -->
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Card body -->
+        <rect x="15" y="8" width="70" height="84" rx="6" ry="6" fill="white" stroke="white" stroke-width="2"/>
+        <!-- Fork on the left -->
+        <line x1="28" y1="22" x2="28" y2="38" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <line x1="23" y1="22" x2="23" y2="30" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <line x1="33" y1="22" x2="33" y2="30" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <line x1="28" y1="38" x2="28" y2="52" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <!-- Text lines on the right -->
+        <line x1="44" y1="26" x2="76" y2="26" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <line x1="44" y1="36" x2="76" y2="36" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <line x1="44" y1="46" x2="68" y2="46" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <!-- Divider -->
+        <line x1="20" y1="62" x2="80" y2="62" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+        <!-- Bottom text lines -->
+        <line x1="20" y1="72" x2="80" y2="72" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <line x1="20" y1="81" x2="80" y2="81" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <line x1="20" y1="90" x2="60" y2="90" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
       </svg>
       <div class="spinner"></div>
     </button>
@@ -358,17 +394,10 @@ description: Clip any recipe from the web for free — no API key needed.
     <div class="preview-body" id="previewBody"></div>
   </div>
 
-  <!-- Fallback CTA — shown when parsing fails -->
-  <div class="fallback-cta" id="fallbackCta">
-    <p class="fallback-cta-eyebrow">Didn't work on this site?</p>
-    <h3>Try Takeaway with AI</h3>
-    <p>Large sites like Food Network, NYT Cooking, and Serious Eats block external requests — and some don't use standard recipe markup at all. The AI-powered version uses Claude to read any page directly, so it works everywhere.</p>
-    <a class="cta-link" href="/cookbook/takeaway/">Try Takeaway → with your API key</a>
-  </div>
-
-  <!-- Supported sites note -->
-  <div class="sites-note" id="sitesNote">
-    <p><strong>Works best with:</strong> food blogs, WordPress recipe sites, AllRecipes, BBC Good Food, Tasty, Delish, and any site using standard recipe markup. <strong>Doesn't work with:</strong> Food Network, NYT Cooking, Serious Eats, Bon Appétit, or any site that blocks external requests or requires a login — use <a class="inline-link" href="/cookbook/takeaway/">Takeaway →</a> for those.</p>
+  <!-- Paid CTA -->
+  <div class="paid-cta">
+    <p class="paid-cta-label">Want to skip the copy-paste?</p>
+    <p>Try <a class="inline-link" href="/cookbook/takeaway/">Takeaway →</a> — paste a URL and Claude fetches and formats the recipe automatically. Requires an Anthropic API key.</p>
   </div>
 
   <!-- How it works -->
@@ -377,11 +406,11 @@ description: Clip any recipe from the web for free — no API key needed.
     <div class="steps">
       <div class="step">
         <span class="step-num">1.</span>
-        Paste any recipe URL from a major site and click the container. No sign-in needed.
+        Open any recipe page. Select all the text — title, ingredients, steps — and copy it.
       </div>
       <div class="step">
         <span class="step-num">2.</span>
-        The page is fetched and its embedded recipe data (JSON-LD schema) is extracted instantly.
+        Paste it into the box and click the recipe card button. Formatting happens locally in your browser.
       </div>
       <div class="step">
         <span class="step-num">3.</span>
@@ -396,60 +425,52 @@ description: Clip any recipe from the web for free — no API key needed.
 (function () {
   'use strict';
 
-  const urlInput      = document.getElementById('urlInput');
-  const btnClip       = document.getElementById('btnClip');
-  const statusLine    = document.getElementById('statusLine');
-  const previewCard   = document.getElementById('previewCard');
-  const previewBody   = document.getElementById('previewBody');
+  const pasteArea    = document.getElementById('pasteArea');
+  const btnClip      = document.getElementById('btnClip');
+  const statusLine   = document.getElementById('statusLine');
+  const previewCard  = document.getElementById('previewCard');
+  const previewBody  = document.getElementById('previewBody');
   const previewFilename = document.getElementById('previewFilename');
-  const btnDownload   = document.getElementById('btnDownload');
-  const fallbackCta   = document.getElementById('fallbackCta');
-  const sitesNote     = document.getElementById('sitesNote');
+  const btnDownload  = document.getElementById('btnDownload');
 
   let currentMarkdown = '';
   let currentFilename = 'recipe.md';
 
-  urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnClip.click(); });
+  // Parse on Cmd/Ctrl+Enter in textarea
+  pasteArea.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) btnClip.click();
+  });
 
-  btnClip.addEventListener('click', async () => {
-    const url = urlInput.value.trim();
-    if (!url || !url.startsWith('http')) {
-      setStatus('error', 'Please enter a valid recipe URL.');
+  btnClip.addEventListener('click', () => {
+    const text = pasteArea.value.trim();
+    if (text.length < 80) {
+      setStatus('error', 'Paste more text — a full recipe is needed to parse correctly.');
       return;
     }
 
     setLoading(true);
     previewCard.classList.remove('visible');
-    fallbackCta.classList.remove('visible');
-    setStatus('', 'Fetching recipe…');
+    setStatus('', 'Parsing…');
 
-    try {
-      const html = await fetchHtml(url);
-      const recipe = extractRecipeSchema(html, url);
+    // Run synchronously after a tick so the UI updates first
+    setTimeout(() => {
+      try {
+        const recipe = parseRecipeText(text);
+        currentMarkdown = buildMarkdown(recipe);
+        currentFilename = toFilename(recipe.title);
 
-      if (!recipe) {
-        setStatus('error', 'No recipe data found — this site may not use standard recipe markup.');
-        fallbackCta.classList.add('visible');
-        return;
+        previewBody.textContent = currentMarkdown;
+        previewFilename.textContent = currentFilename;
+        btnDownload.textContent = '↓ Save to Downloads';
+        btnDownload.classList.remove('saved');
+        previewCard.classList.add('visible');
+        setStatus('success', '✓ Recipe parsed — check the preview and save.');
+      } catch (e) {
+        setStatus('error', e.message);
+      } finally {
+        setLoading(false);
       }
-
-      const markdown = buildMarkdown(recipe, url);
-      currentMarkdown = markdown;
-      currentFilename = toFilename(recipe.name || recipe.title || url);
-
-      previewBody.textContent = markdown;
-      previewFilename.textContent = currentFilename;
-      btnDownload.textContent = '↓ Save to Downloads';
-      btnDownload.classList.remove('saved');
-      previewCard.classList.add('visible');
-      setStatus('success', '✓ Recipe clipped — preview below.');
-
-    } catch (err) {
-      setStatus('error', err.message);
-      fallbackCta.classList.add('visible');
-    } finally {
-      setLoading(false);
-    }
+    }, 30);
   });
 
   btnDownload.addEventListener('click', () => {
@@ -468,276 +489,242 @@ description: Clip any recipe from the web for free — no API key needed.
     }, 2500);
   });
 
-  // ── Fetch HTML via CORS proxy ──────────────────────────────────
-  // Known sites that block proxy fetches
-  const BLOCKED_SITES = [
-    'foodnetwork.com', 'nytimes.com', 'cooking.nytimes.com',
-    'seriouseats.com', 'bonappetit.com', 'epicurious.com',
-    'washingtonpost.com', 'wsj.com', 'saveur.com'
+  // ─────────────────────────────────────────────────────────────
+  //  PARSER — regex-based, works on plain pasted text
+  // ─────────────────────────────────────────────────────────────
+
+  function parseRecipeText(raw) {
+    // Normalise line endings, collapse 3+ blank lines
+    const text = raw.replace(/\r\n/g, '\n').replace(/\n{4,}/g, '\n\n\n').trim();
+    const lines = text.split('\n').map(l => l.trim());
+
+    return {
+      title:        extractTitle(lines, text),
+      description:  extractDescription(lines, text),
+      prepTime:     extractTime(text, /prep\s*time[:\s]+([^\n,\.]+)/i),
+      cookTime:     extractTime(text, /(?:cook|bake|total)\s*time[:\s]+([^\n,\.]+)/i),
+      servings:     extractServings(text),
+      difficulty:   extractDifficulty(text),
+      category:     extractCategory(text),
+      tags:         extractTags(text),
+      ingredients:  extractIngredients(lines, text),
+      instructions: extractInstructions(lines, text),
+    };
+  }
+
+  function extractTitle(lines, text) {
+    // First non-empty line that isn't a nav/meta artifact is usually the title
+    for (const line of lines) {
+      if (line.length > 4 && line.length < 100 &&
+          !/^(jump to|print|pin|save|share|home|recipe|course|serves|prep|cook|total|rating|by |author)/i.test(line) &&
+          !/^https?:/i.test(line)) {
+        return line.replace(/^#+\s*/, '').trim();
+      }
+    }
+    return 'Untitled Recipe';
+  }
+
+  function extractDescription(lines, text) {
+    // Look for a sentence-length line after the title that reads like a description
+    let foundTitle = false;
+    for (const line of lines) {
+      if (!foundTitle) { foundTitle = true; continue; }
+      if (line.length > 30 && line.length < 280 &&
+          /[a-z]/.test(line) &&
+          !/^(ingredient|instruction|direction|step|method|note|prep|cook|total|serves|yield|jump|print|pin)/i.test(line) &&
+          !line.match(/^\d/) &&
+          !/^https?:/i.test(line)) {
+        return line.replace(/[*_]/g, '').trim();
+      }
+    }
+    return '';
+  }
+
+  function extractTime(text, pattern) {
+    const m = text.match(pattern);
+    if (!m) return '';
+    // Clean up the captured group
+    return m[1].trim()
+      .replace(/\s+/g, ' ')
+      .replace(/minutes?/gi, 'min')
+      .replace(/hours?/gi, 'hr')
+      .slice(0, 30);
+  }
+
+  function extractServings(text) {
+    const m = text.match(/(?:serves?|yield|servings?|makes?)[:\s]+([^\n,\.]{1,20})/i);
+    return m ? m[1].trim().slice(0, 20) : '';
+  }
+
+  function extractDifficulty(text) {
+    const m = text.match(/\b(easy|medium|hard|simple|difficult|intermediate|beginner|advanced)\b/i);
+    if (!m) {
+      // Guess from step count
+      return '';
+    }
+    const w = m[1].toLowerCase();
+    if (['easy', 'simple', 'beginner'].includes(w)) return 'Easy';
+    if (['hard', 'difficult', 'advanced'].includes(w)) return 'Hard';
+    return 'Medium';
+  }
+
+  const CATEGORY_WORDS = [
+    ['pasta', 'spaghetti', 'penne', 'rigatoni', 'fettuccine', 'linguine', 'noodle'],
+    ['chicken', 'poultry', 'turkey', 'duck'],
+    ['beef', 'steak', 'burger', 'lamb', 'pork', 'meatball'],
+    ['fish', 'salmon', 'tuna', 'shrimp', 'prawn', 'seafood', 'cod', 'halibut'],
+    ['salad', 'slaw'],
+    ['soup', 'stew', 'chili', 'chowder', 'broth', 'bisque'],
+    ['breakfast', 'pancake', 'waffle', 'omelette', 'egg', 'frittata', 'oatmeal'],
+    ['cake', 'cookie', 'bread', 'muffin', 'brownie', 'tart', 'pastry', 'biscuit', 'scone', 'loaf'],
+    ['dessert', 'pudding', 'ice cream', 'gelato', 'tiramisu', 'cheesecake'],
+    ['cocktail', 'smoothie', 'juice', 'lemonade', 'drink', 'mocktail'],
+    ['vegetarian', 'vegan', 'tofu', 'tempeh', 'lentil'],
   ];
 
-  function isBlockedSite(url) {
-    try {
-      const host = new URL(url).hostname.replace('www.', '');
-      return BLOCKED_SITES.some(s => host.includes(s));
-    } catch { return false; }
-  }
+  const CATEGORY_NAMES = ['Pasta','Poultry','Beef','Seafood','Salad','Soup','Breakfast','Baking','Dessert','Drinks','Vegetarian'];
 
-  async function fetchHtml(url) {
-    if (isBlockedSite(url)) {
-      throw new Error('This site blocks external requests. Try Takeaway → with an API key instead — it can handle any site.');
-    }
-
-    // Try three CORS proxies in sequence — if one is down, the next picks up
-    const proxies = [
-      async () => {
-        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) throw new Error('failed');
-        const d = await r.json();
-        if (!d.contents || d.contents.length < 500) throw new Error('empty');
-        return d.contents;
-      },
-      async () => {
-        const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) throw new Error('failed');
-        const text = await r.text();
-        if (text.length < 500) throw new Error('empty');
-        return text;
-      },
-      async () => {
-        const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) throw new Error('failed');
-        const text = await r.text();
-        if (text.length < 500) throw new Error('empty');
-        return text;
-      }
-    ];
-
-    for (const proxy of proxies) {
-      try { return await proxy(); } catch (e) { continue; }
-    }
-    throw new Error('Could not fetch the page — all proxies failed or were blocked. Try Takeaway → with an API key instead.');
-  }
-
-  // ── Extract JSON-LD Recipe schema ─────────────────────────────
-  function extractRecipeSchema(html, sourceUrl) {
-    // Parse the HTML string into a document
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    // Find all JSON-LD script tags
-    const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-    let recipe = null;
-
-    for (const script of scripts) {
-      try {
-        const raw = script.textContent.trim();
-        if (!raw) continue;
-        const json = JSON.parse(raw);
-
-        // Handle single object or @graph array
-        const candidates = json['@graph']
-          ? json['@graph']
-          : Array.isArray(json) ? json : [json];
-
-        for (const item of candidates) {
-          const type = item['@type'];
-          const isRecipe = type === 'Recipe' ||
-            (Array.isArray(type) && type.includes('Recipe'));
-          if (isRecipe) { recipe = item; break; }
-        }
-        if (recipe) break;
-      } catch (e) { /* malformed JSON, skip */ }
-    }
-
-    // Fallback: try meta tags for title/image if no schema but at least get something
-    if (!recipe) return null;
-    return recipe;
-  }
-
-  // ── Build Jekyll markdown from schema ────────────────────────
-  function buildMarkdown(r, sourceUrl) {
-    const title       = clean(r.name || r.headline || 'Untitled Recipe');
-    const description = clean(r.description || '');
-    const image       = extractImage(r);
-    const prepTime    = parseDuration(r.prepTime);
-    const cookTime    = parseDuration(r.cookTime);
-    const totalTime   = parseDuration(r.totalTime);
-    const servings    = extractServings(r);
-    const category    = guessCategory(r);
-    const tags        = extractTags(r);
-    const difficulty  = guessDifficulty(r);
-    const ingredients = extractIngredients(r);
-    const instructions = extractInstructions(r);
-    const imageSlug   = '/assets/images/' + toFilename(title).replace('.md', '.jpg');
-
-    let fm = '---\n';
-    fm += `layout: recipe\n`;
-    fm += `title: "${title.replace(/"/g, "'")}"\n`;
-    if (description) fm += `description: "${truncate(description, 120).replace(/"/g, "'")}"\n`;
-    if (category)    fm += `category: ${category}\n`;
-    if (tags.length) fm += `tags: [${tags.join(', ')}]\n`;
-    if (prepTime)    fm += `prep_time: ${prepTime}\n`;
-    if (cookTime || totalTime) fm += `cook_time: ${cookTime || totalTime}\n`;
-    if (servings)    fm += `servings: ${servings}\n`;
-    if (difficulty)  fm += `difficulty: ${difficulty}\n`;
-    fm += `image: ${image || imageSlug}\n`;
-    fm += '\ningredients:\n';
-    for (const ing of ingredients) fm += `  - ${clean(ing)}\n`;
-    fm += '---\n\n';
-
-    for (const step of instructions) {
-      fm += `1. ${clean(step)}\n\n`;
-    }
-
-    return fm.trimEnd() + '\n';
-  }
-
-  // ── Schema helpers ────────────────────────────────────────────
-  function extractImage(r) {
-    if (!r.image) return null;
-    if (typeof r.image === 'string') return r.image;
-    if (Array.isArray(r.image)) return r.image[0]?.url || r.image[0];
-    if (typeof r.image === 'object') return r.image.url || null;
-    return null;
-  }
-
-  function extractServings(r) {
-    const s = r.recipeYield;
-    if (!s) return '';
-    if (typeof s === 'string') return s;
-    if (Array.isArray(s)) return s[0];
-    return String(s);
-  }
-
-  function extractIngredients(r) {
-    const raw = r.recipeIngredient || r.ingredients || [];
-    return Array.isArray(raw) ? raw.filter(Boolean) : [String(raw)];
-  }
-
-  function extractInstructions(r) {
-    const raw = r.recipeInstructions || r.instructions || [];
-    if (!raw) return [];
-
-    // Can be string, array of strings, array of HowToStep objects, or array of HowToSection
-    if (typeof raw === 'string') {
-      return raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
-    }
-
-    const steps = [];
-    const items = Array.isArray(raw) ? raw : [raw];
-
-    for (const item of items) {
-      if (typeof item === 'string') {
-        steps.push(item.trim());
-      } else if (item['@type'] === 'HowToSection' && item.itemListElement) {
-        // Sections contain nested steps
-        for (const sub of item.itemListElement) {
-          const text = sub.text || sub.name || '';
-          if (text.trim()) steps.push(text.trim());
-        }
-      } else {
-        const text = item.text || item.name || '';
-        if (text.trim()) steps.push(text.trim());
-      }
-    }
-
-    return steps.filter(Boolean);
-  }
-
-  function extractTags(r) {
-    const raw = r.keywords || r.recipeCategory || [];
-    let tags = [];
-    if (typeof raw === 'string') {
-      tags = raw.split(/[,;]/).map(t => t.trim()).filter(Boolean);
-    } else if (Array.isArray(raw)) {
-      tags = raw.flatMap(t => typeof t === 'string' ? t.split(/[,;]/) : []).map(t => t.trim()).filter(Boolean);
-    }
-    // Cap at 4 tags, title-case them
-    return tags.slice(0, 4).map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
-  }
-
-  const CATEGORY_MAP = {
-    pasta: 'Pasta', noodle: 'Pasta', spaghetti: 'Pasta', rigatoni: 'Pasta',
-    bak: 'Baking', bread: 'Baking', cake: 'Baking', cookie: 'Baking', muffin: 'Baking', pastry: 'Baking', tart: 'Baking',
-    chicken: 'Poultry', turkey: 'Poultry', duck: 'Poultry', poultry: 'Poultry',
-    beef: 'Beef', steak: 'Beef', burger: 'Beef', lamb: 'Beef', pork: 'Beef',
-    fish: 'Seafood', salmon: 'Seafood', shrimp: 'Seafood', seafood: 'Seafood', prawn: 'Seafood',
-    salad: 'Salad',
-    soup: 'Soup', stew: 'Soup', chili: 'Soup', broth: 'Soup',
-    breakfast: 'Breakfast', egg: 'Breakfast', pancake: 'Breakfast', waffle: 'Breakfast', oat: 'Breakfast',
-    dessert: 'Dessert', 'ice cream': 'Dessert', pudding: 'Dessert', brownie: 'Dessert',
-    cocktail: 'Drinks', smoothie: 'Drinks', juice: 'Drinks', drink: 'Drinks',
-    vegetarian: 'Vegetarian', vegan: 'Vegetarian', veggie: 'Vegetarian',
-    side: 'Sides', rice: 'Sides', potato: 'Sides', roast: 'Sides'
-  };
-
-  function guessCategory(r) {
-    const haystack = [
-      r.name, r.description, r.recipeCategory,
-      ...(Array.isArray(r.keywords) ? r.keywords : [r.keywords])
-    ].filter(Boolean).join(' ').toLowerCase();
-
-    for (const [kw, cat] of Object.entries(CATEGORY_MAP)) {
-      if (haystack.includes(kw)) return cat;
+  function extractCategory(text) {
+    const lower = text.toLowerCase();
+    for (let i = 0; i < CATEGORY_WORDS.length; i++) {
+      if (CATEGORY_WORDS[i].some(w => lower.includes(w))) return CATEGORY_NAMES[i];
     }
     return 'Sides';
   }
 
-  function guessDifficulty(r) {
-    // Some schemas include difficulty or aggregate ratings we can use
-    if (r.difficulty) return r.difficulty;
-    const steps = extractInstructions(r).length;
-    const ings  = extractIngredients(r).length;
-    const prep  = parseDurationMinutes(r.prepTime) || 0;
-    const cook  = parseDurationMinutes(r.cookTime) || parseDurationMinutes(r.totalTime) || 0;
-    const total = prep + cook;
-    if (steps <= 5 && ings <= 8 && total <= 30) return 'Easy';
-    if (steps >= 12 || ings >= 16 || total >= 120) return 'Hard';
-    return 'Medium';
+  function extractTags(text) {
+    const lower = text.toLowerCase();
+    const candidates = [
+      'quick','easy','one-pot','gluten-free','dairy-free','vegetarian','vegan',
+      'mexican','italian','asian','greek','mediterranean','american',
+      'grilled','baked','fried','roasted','slow cooker','instant pot',
+      'weeknight','make-ahead','freezer-friendly','summer','winter',
+    ];
+    return candidates.filter(t => lower.includes(t.replace(/-/g, ' '))).slice(0, 4)
+      .map(t => t.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
   }
 
-  // ── Duration parsing ──────────────────────────────────────────
-  // ISO 8601: PT1H30M → "1 hr 30 min"
-  function parseDuration(iso) {
-    if (!iso) return '';
-    const h = iso.match(/(\d+)H/);
-    const m = iso.match(/(\d+)M/);
-    const hours = h ? parseInt(h[1]) : 0;
-    const mins  = m ? parseInt(m[1]) : 0;
-    if (!hours && !mins) return '';
-    if (hours && mins) return `${hours} hr ${mins} min`;
-    if (hours) return `${hours} hr`;
-    return `${mins} min`;
+  function extractIngredients(lines, text) {
+    // Find the ingredients section
+    const ingStart = findSectionStart(lines, /^ingred/i);
+    const ingEnd   = findSectionEnd(lines, ingStart, /^(instruct|direct|method|steps?|how to|preparat)/i);
+
+    if (ingStart === -1) return extractFallbackIngredients(lines);
+
+    const slice = lines.slice(ingStart + 1, ingEnd === -1 ? ingStart + 60 : ingEnd);
+    const ings = [];
+
+    for (const line of slice) {
+      if (!line || line.length < 3) continue;
+      if (/^(instruct|direct|method|step|note|tip|for the|how to)/i.test(line)) break;
+      // Skip obvious non-ingredient lines
+      if (line.length > 120) continue;
+      if (/^#+/.test(line) && line.length > 40) continue;
+      // Clean up bullets, dashes, numbers
+      const cleaned = line.replace(/^[-•*·◦▪▸→]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+      if (cleaned.length > 2) ings.push(cleaned);
+    }
+
+    return ings.length > 0 ? ings : extractFallbackIngredients(lines);
   }
 
-  function parseDurationMinutes(iso) {
-    if (!iso) return 0;
-    const h = iso.match(/(\d+)H/);
-    const m = iso.match(/(\d+)M/);
-    return (h ? parseInt(h[1]) * 60 : 0) + (m ? parseInt(m[1]) : 0);
+  function extractFallbackIngredients(lines) {
+    // Heuristic: lines that look like measurements
+    return lines.filter(l =>
+      /^[\d¼½¾⅓⅔⅛⅜⅝⅞]/.test(l) &&
+      l.length > 3 && l.length < 100
+    ).slice(0, 20);
   }
 
-  // ── String helpers ────────────────────────────────────────────
-  function clean(str) {
-    if (typeof str !== 'string') str = String(str || '');
-    return str.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  function extractInstructions(lines, text) {
+    const instStart = findSectionStart(lines, /^(instruct|direct|method|steps?|how to|preparat)/i);
+    if (instStart === -1) return extractFallbackInstructions(lines);
+
+    const slice = lines.slice(instStart + 1);
+    const steps = [];
+    let current = '';
+
+    for (const line of slice) {
+      if (!line) {
+        if (current.trim().length > 10) { steps.push(current.trim()); current = ''; }
+        continue;
+      }
+      // New numbered step
+      if (/^\d+[\.\)]\s+/.test(line)) {
+        if (current.trim().length > 10) steps.push(current.trim());
+        current = line.replace(/^\d+[\.\)]\s+/, '').trim();
+      } else if (/^[-•*]\s+/.test(line) && line.length > 15) {
+        if (current.trim().length > 10) steps.push(current.trim());
+        current = line.replace(/^[-•*]\s+/, '').trim();
+      } else if (line.length > 15 && !/^(note|tip|storage|nutrition|serving suggestion)/i.test(line)) {
+        current += (current ? ' ' : '') + line;
+      } else if (/^(note|tip|storage|nutrition)/i.test(line)) {
+        break;
+      }
+    }
+    if (current.trim().length > 10) steps.push(current.trim());
+
+    return steps.length > 0 ? steps : extractFallbackInstructions(lines);
   }
 
-  function truncate(str, n) {
-    return str.length <= n ? str : str.slice(0, n).replace(/\s\S*$/, '') + '…';
+  function extractFallbackInstructions(lines) {
+    return lines.filter(l =>
+      /^\d+[\.\)]/.test(l) && l.length > 20
+    ).map(l => l.replace(/^\d+[\.\)]\s*/, '').trim());
   }
 
-  function toFilename(str) {
-    return String(str)
+  function findSectionStart(lines, pattern) {
+    return lines.findIndex(l => pattern.test(l.replace(/[:#*]/g, '').trim()));
+  }
+
+  function findSectionEnd(lines, start, pattern) {
+    if (start === -1) return -1;
+    const idx = lines.findIndex((l, i) => i > start && pattern.test(l.replace(/[:#*]/g, '').trim()));
+    return idx === -1 ? -1 : idx;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  //  MARKDOWN BUILDER
+  // ─────────────────────────────────────────────────────────────
+
+  function buildMarkdown(r) {
+    const imageSlug = '/assets/images/' + toFilename(r.title).replace('.md', '.jpg');
+    let md = '---\n';
+    md += `layout: recipe\n`;
+    md += `title: "${esc(r.title)}"\n`;
+    if (r.description) md += `description: "${esc(truncate(r.description, 130))}"\n`;
+    if (r.category)    md += `category: ${r.category}\n`;
+    if (r.tags.length) md += `tags: [${r.tags.join(', ')}]\n`;
+    if (r.prepTime)    md += `prep_time: ${r.prepTime}\n`;
+    if (r.cookTime)    md += `cook_time: ${r.cookTime}\n`;
+    if (r.servings)    md += `servings: ${r.servings}\n`;
+    if (r.difficulty)  md += `difficulty: ${r.difficulty}\n`;
+    md += `image: ${imageSlug}\n`;
+    md += '\ningredients:\n';
+    for (const i of r.ingredients) md += `  - ${esc(i)}\n`;
+    md += '---\n\n';
+    for (const s of r.instructions) md += `1. ${esc(s)}\n\n`;
+    return md.trimEnd() + '\n';
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  //  UTILS
+  // ─────────────────────────────────────────────────────────────
+
+  function esc(s) { return String(s || '').replace(/"/g, "'"); }
+
+  function truncate(s, n) {
+    return s.length <= n ? s : s.slice(0, n).replace(/\s\S*$/, '') + '…';
+  }
+
+  function toFilename(title) {
+    return String(title)
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .trim()
-      .replace(/\s+/g, '-')
-      + '.md';
+      .replace(/\s+/g, '-') + '.md';
   }
 
-  // ── UI helpers ────────────────────────────────────────────────
   function setLoading(on) {
     btnClip.disabled = on;
     btnClip.classList.toggle('loading', on);
