@@ -362,13 +362,13 @@ description: Clip any recipe from the web for free — no API key needed.
   <div class="fallback-cta" id="fallbackCta">
     <p class="fallback-cta-eyebrow">Didn't work on this site?</p>
     <h3>Try Takeaway with AI</h3>
-    <p>This free version reads structured recipe data that most major sites embed. For sites that don't support it — paywalled blogs, non-standard layouts, or anything unusual — the AI-powered version can clip almost anything.</p>
+    <p>Large sites like Food Network, NYT Cooking, and Serious Eats block external requests — and some don't use standard recipe markup at all. The AI-powered version uses Claude to read any page directly, so it works everywhere.</p>
     <a class="cta-link" href="/cookbook/takeaway/">Try Takeaway → with your API key</a>
   </div>
 
   <!-- Supported sites note -->
   <div class="sites-note" id="sitesNote">
-    <p>Works with most major recipe sites that embed structured data: <strong>Serious Eats, AllRecipes, Food Network, Bon Appétit, Epicurious, NYT Cooking, BBC Good Food, Tasty, Delish,</strong> and hundreds more. Doesn't work on personal blogs or sites without schema markup — use <a class="inline-link" href="/cookbook/takeaway/">Takeaway →</a> for those.</p>
+    <p><strong>Works best with:</strong> food blogs, WordPress recipe sites, AllRecipes, BBC Good Food, Tasty, Delish, and any site using standard recipe markup. <strong>Doesn't work with:</strong> Food Network, NYT Cooking, Serious Eats, Bon Appétit, or any site that blocks external requests or requires a login — use <a class="inline-link" href="/cookbook/takeaway/">Takeaway →</a> for those.</p>
   </div>
 
   <!-- How it works -->
@@ -428,8 +428,7 @@ description: Clip any recipe from the web for free — no API key needed.
       const recipe = extractRecipeSchema(html, url);
 
       if (!recipe) {
-        // No schema found — show fallback CTA
-        setStatus('error', 'No structured recipe data found on this page.');
+        setStatus('error', 'No recipe data found — this site may not use standard recipe markup.');
         fallbackCta.classList.add('visible');
         return;
       }
@@ -470,12 +469,36 @@ description: Clip any recipe from the web for free — no API key needed.
   });
 
   // ── Fetch HTML via CORS proxy ──────────────────────────────────
+  // Known sites that block proxy fetches
+  const BLOCKED_SITES = [
+    'foodnetwork.com', 'nytimes.com', 'cooking.nytimes.com',
+    'seriouseats.com', 'bonappetit.com', 'epicurious.com',
+    'washingtonpost.com', 'wsj.com', 'saveur.com'
+  ];
+
+  function isBlockedSite(url) {
+    try {
+      const host = new URL(url).hostname.replace('www.', '');
+      return BLOCKED_SITES.some(s => host.includes(s));
+    } catch { return false; }
+  }
+
   async function fetchHtml(url) {
+    if (isBlockedSite(url)) {
+      throw new Error('This site blocks external requests. Try Takeaway → with an API key instead — it can handle any site.');
+    }
     const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error('Could not fetch the page. Check the URL and try again.');
+    let res;
+    try {
+      res = await fetch(proxyUrl);
+    } catch (e) {
+      throw new Error('Network error — check your connection and try again.');
+    }
+    if (!res.ok) throw new Error('Could not reach the recipe page. The site may be blocking requests.');
     const data = await res.json();
-    if (!data.contents) throw new Error('The page returned no content — it may require a login.');
+    if (!data.contents || data.contents.length < 500) {
+      throw new Error('The page returned no usable content — it may require a login or block external access.');
+    }
     return data.contents;
   }
 
