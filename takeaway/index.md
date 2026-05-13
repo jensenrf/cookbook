@@ -296,6 +296,29 @@ description: Clip any recipe from the web and save it as a markdown file for you
     text-decoration-color: var(--border);
   }
   .api-link:hover { text-decoration-color: var(--ink); }
+
+  /* ── Free version nudge ── */
+  .free-cta {
+    margin-top: 2rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .free-cta-label {
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .3rem;
+  }
+
+  .free-cta p:last-child {
+    font-size: .88rem;
+    color: var(--muted);
+    margin: 0;
+  }
 </style>
 
 <div class="takeaway-wrap">
@@ -370,6 +393,11 @@ description: Clip any recipe from the web and save it as a markdown file for you
         Download the <code>.md</code> file and drop it into <code>_recipes/</code> in your repo.
       </div>
     </div>
+  </div>
+
+  <div class="free-cta">
+    <p class="free-cta-label">No API key?</p>
+    <p>Try <a class="api-link" href="/cookbook/takeaway-free/">Takeaway Free →</a> — works on most major recipe sites with no account or key needed.</p>
   </div>
 
 </div>
