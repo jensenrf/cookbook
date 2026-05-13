@@ -487,19 +487,36 @@ description: Clip any recipe from the web for free — no API key needed.
     if (isBlockedSite(url)) {
       throw new Error('This site blocks external requests. Try Takeaway → with an API key instead — it can handle any site.');
     }
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    let res;
-    try {
-      res = await fetch(proxyUrl);
-    } catch (e) {
-      throw new Error('Network error — check your connection and try again.');
+
+    // Try three CORS proxies in sequence — if one is down, the next picks up
+    const proxies = [
+      async () => {
+        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error('failed');
+        const d = await r.json();
+        if (!d.contents || d.contents.length < 500) throw new Error('empty');
+        return d.contents;
+      },
+      async () => {
+        const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error('failed');
+        const text = await r.text();
+        if (text.length < 500) throw new Error('empty');
+        return text;
+      },
+      async () => {
+        const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error('failed');
+        const text = await r.text();
+        if (text.length < 500) throw new Error('empty');
+        return text;
+      }
+    ];
+
+    for (const proxy of proxies) {
+      try { return await proxy(); } catch (e) { continue; }
     }
-    if (!res.ok) throw new Error('Could not reach the recipe page. The site may be blocking requests.');
-    const data = await res.json();
-    if (!data.contents || data.contents.length < 500) {
-      throw new Error('The page returned no usable content — it may require a login or block external access.');
-    }
-    return data.contents;
+    throw new Error('Could not fetch the page — all proxies failed or were blocked. Try Takeaway → with an API key instead.');
   }
 
   // ── Extract JSON-LD Recipe schema ─────────────────────────────
